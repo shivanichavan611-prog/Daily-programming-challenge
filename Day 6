@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure for storing linked list of indices for prefix sums
+typedef struct Node {
+    int index;
+    struct Node* next;
+} Node;
+
+// Hash map entry
+typedef struct HashNode {
+    long long prefixSum;
+    Node* indices;  // linked list of indices where this prefix sum occurred
+    struct HashNode* next;
+} HashNode;
+
+#define HASH_SIZE 100003  // large prime for hashing
+
+// Hash function
+int hashFunc(long long key) {
+    if (key < 0) key = -key;
+    return (int)(key % HASH_SIZE);
+}
+
+// Insert prefix sum occurrence into hashmap
+void insert(HashNode** hashTable, long long sum, int index) {
+    int hashIndex = hashFunc(sum);
+    HashNode* entry = hashTable[hashIndex];
+
+    // Search if prefix sum already exists
+    while (entry != NULL) {
+        if (entry->prefixSum == sum) {
+            // add index to linked list
+            Node* newNode = (Node*)malloc(sizeof(Node));
+            newNode->index = index;
+            newNode->next = entry->indices;
+            entry->indices = newNode;
+            return;
+        }
+        entry = entry->next;
+    }
+
+    // Not found -> create new hash entry
+    HashNode* newEntry = (HashNode*)malloc(sizeof(HashNode));
+    newEntry->prefixSum = sum;
+    newEntry->indices = (Node*)malloc(sizeof(Node));
+    newEntry->indices->index = index;
+    newEntry->indices->next = NULL;
+    newEntry->next = hashTable[hashIndex];
+    hashTable[hashIndex] = newEntry;
+}
+
+// Find all subarrays with zero sum
+void findZeroSumSubarrays(int arr[], int n) {
+    HashNode* hashTable[HASH_SIZE] = {0};  // initialize hash table
+    long long prefixSum = 0;
+
+    // Insert prefix sum = 0 at index -1 (important for subarrays starting at 0)
+    insert(hashTable, 0, -1);
+
+    for (int i = 0; i < n; i++) {
+        prefixSum += arr[i];
+
+        int hashIndex = hashFunc(prefixSum);
+        HashNode* entry = hashTable[hashIndex];
+
+        while (entry != NULL) {
+            if (entry->prefixSum == prefixSum) {
+                Node* temp = entry->indices;
+                while (temp != NULL) {
+                    printf("(%d, %d)\n", temp->index + 1, i); 
+                    temp = temp->next;
+                }
+                break;
+            }
+            entry = entry->next;
+        }
+
+        insert(hashTable, prefixSum, i);
+    }
+}
+
+// Driver code
+int main() {
+    int arr[] = {1, 2, -3, 3, -1, 2};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    printf("Zero-sum subarrays:\n");
+    findZeroSumSubarrays(arr, n);
+
+    return 0;
+}
