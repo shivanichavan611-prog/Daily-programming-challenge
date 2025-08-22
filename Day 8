@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void reverseWords(char *s) {
+    int n = strlen(s);
+    char result[n + 1];
+    int i = n - 1, k = 0;
+
+    while (i >= 0) {
+        // Skip trailing spaces
+        while (i >= 0 && isspace(s[i])) i--;
+
+        if (i < 0) break;
+
+        // Find the end of the word
+        int j = i;
+        while (i >= 0 && !isspace(s[i])) i--;
+
+        // Copy the word into result
+        for (int p = i + 1; p <= j; p++) {
+            result[k++] = s[p];
+        }
+
+        // Add a space if more words remain
+        result[k++] = ' ';
+    }
+
+    if (k > 0) k--; // Remove trailing space
+    result[k] = '\0';
+
+    printf("%s\n", result);
+}
+
+int main() {
+    char s[10005];
+
+    // Read the whole line (including spaces)
+    fgets(s, sizeof(s), stdin);
+
+    // Remove trailing newline if present
+    s[strcspn(s, "\n")] = '\0';
+
+    reverseWords(s);
+
+    return 0;
+}
