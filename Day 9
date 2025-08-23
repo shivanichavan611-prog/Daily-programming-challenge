@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function to find the longest common prefix
+char* longestCommonPrefix(char strs[][201], int n) {
+    static char prefix[201]; // buffer for result
+    int i, j;
+    
+    if (n == 0) return "";  // Empty array case
+    if (n == 1) return strs[0]; // Single string case
+    
+    // Initialize prefix as the first string
+    strcpy(prefix, strs[0]);
+    
+    // Compare with each string in array
+    for (i = 1; i < n; i++) {
+        j = 0;
+        while (prefix[j] && strs[i][j] && prefix[j] == strs[i][j]) {
+            j++;
+        }
+        prefix[j] = '\0';  // Cut down the prefix to matched part
+        if (prefix[0] == '\0') {
+            return ""; // No common prefix
+        }
+    }
+    return prefix;
+}
+
+int main() {
+    // Test cases
+    char strs1[][201] = {"flower", "flow", "flight"};
+    char strs2[][201] = {"dog", "racecar", "car"};
+    char strs3[][201] = {"apple", "ape", "april"};
+    char strs4[][201] = {""};
+    char strs5[][201] = {"alone"};
+    
+    printf("Output 1: \"%s\"\n", longestCommonPrefix(strs1, 3)); // fl
+    printf("Output 2: \"%s\"\n", longestCommonPrefix(strs2, 3)); // ""
+    printf("Output 3: \"%s\"\n", longestCommonPrefix(strs3, 3)); // ap
+    printf("Output 4: \"%s\"\n", longestCommonPrefix(strs4, 1)); // ""
+    printf("Output 5: \"%s\"\n", longestCommonPrefix(strs5, 1)); // alone
+    
+    return 0;
+}
