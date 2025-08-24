@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_STRS 10000
+#define MAX_LEN  101
+
+// Function to compare two chars (for qsort)
+int cmpChar(const void *a, const void *b) {
+    return (*(char*)a - *(char*)b);
+}
+
+// Function to compare two strings (for qsort of output groups)
+int cmpStr(const void *a, const void *b) {
+    return strcmp(*(const char **)a, *(const char **)b);
+}
+
+// Structure for a group of anagrams
+typedef struct {
+    char signature[MAX_LEN];  // sorted key
+    char *words[MAX_STRS];    // store words
+    int count;
+} AnagramGroup;
+
+int main() {
+    // Example input
+    char *strs[] = {"eat", "tea", "tan", "ate", "nat", "bat"};
+    int n = sizeof(strs) / sizeof(strs[0]);
+
+    AnagramGroup groups[MAX_STRS];
+    int groupCount = 0;
+
+    for (int i = 0; i < n; i++) {
+        char word[MAX_LEN];
+        strcpy(word, strs[i]);
+
+        // Create sorted signature
+        qsort(word, strlen(word), sizeof(char), cmpChar);
+
+        // Check if signature already exists
+        int found = -1;
+        for (int g = 0; g < groupCount; g++) {
+            if (strcmp(groups[g].signature, word) == 0) {
+                found = g;
+                break;
+            }
+        }
+
+        // If not found, create new group
+        if (found == -1) {
+            strcpy(groups[groupCount].signature, word);
+            groups[groupCount].count = 0;
+            found = groupCount++;
+        }
+
+        // Add word to group
+        groups[found].words[groups[found].count++] = strs[i];
+    }
+
+    // Print groups
+    printf("Output: [");
+    for (int g = 0; g < groupCount; g++) {
+        printf("[");
+        for (int j = 0; j < groups[g].count; j++) {
+            printf("\"%s\"", groups[g].words[j]);
+            if (j < groups[g].count - 1) printf(", ");
+        }
+        printf("]");
+        if (g < groupCount - 1) printf(", ");
+    }
+    printf("]\n");
+
+    return 0;
+}
