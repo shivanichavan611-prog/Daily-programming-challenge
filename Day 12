@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX 10000   // max string length
+
+// Stack implementation
+char stack[MAX];
+int top = -1;
+
+// Push function
+void push(char c) {
+    if (top < MAX - 1) {
+        stack[++top] = c;
+    }
+}
+
+// Pop function
+char pop() {
+    if (top >= 0) {
+        return stack[top--];
+    }
+    return '\0'; // return null character if stack empty
+}
+
+// Function to check matching pair
+bool isMatching(char open, char close) {
+    return (open == '(' && close == ')') ||
+           (open == '{' && close == '}') ||
+           (open == '[' && close == ']');
+}
+
+// Function to check if parentheses string is valid
+bool isValid(char *s) {
+    top = -1; // reset stack for each test case
+    int n = strlen(s);
+
+    for (int i = 0; i < n; i++) {
+        char c = s[i];
+        if (c == '(' || c == '{' || c == '[') {
+            push(c);
+        } else {
+            if (top == -1) return false; // closing bracket without opening
+            char topChar = pop();
+            if (!isMatching(topChar, c)) return false;
+        }
+    }
+    return (top == -1); // valid only if stack is empty
+}
+
+// Driver code
+int main() {
+    char s[MAX];
+
+    // Example test cases
+    char *tests[] = {"()", "([)]", "[{()}]", "", "{[}"};
+    int size = sizeof(tests) / sizeof(tests[0]);
+
+    for (int i = 0; i < size; i++) {
+        strcpy(s, tests[i]);
+        if (isValid(s))
+            printf("Input: \"%s\" -> Output: true\n", s);
+        else
+            printf("Input: \"%s\" -> Output: false\n", s);
+    }
+
+    return 0;
+}
