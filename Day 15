@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <string.h>
+
+int lengthOfLongestSubstring(char *s) {
+    int n = strlen(s);
+    if (n == 0) return 0;
+
+    int freq[256] = {0};  // ASCII character frequency
+    int left = 0, right = 0;
+    int maxLen = 0;
+
+    while (right < n) {
+        // Expand the window
+        freq[(unsigned char)s[right]]++;
+
+        // If duplicate found, shrink from left
+        while (freq[(unsigned char)s[right]] > 1) {
+            freq[(unsigned char)s[left]]--;
+            left++;
+        }
+
+        // Update maximum length
+        int windowLen = right - left + 1;
+        if (windowLen > maxLen)
+            maxLen = windowLen;
+
+        right++;
+    }
+    return maxLen;
+}
+
+int main() {
+    char s1[] = "abcabcbb";
+    char s2[] = "bbbbb";
+    char s3[] = "pwwkew";
+    char s4[] = "abcdefgh";
+    char s5[] = "a";
+
+    printf("Input: %s -> Output: %d\n", s1, lengthOfLongestSubstring(s1));
+    printf("Input: %s -> Output: %d\n", s2, lengthOfLongestSubstring(s2));
+    printf("Input: %s -> Output: %d\n", s3, lengthOfLongestSubstring(s3));
+    printf("Input: %s -> Output: %d\n", s4, lengthOfLongestSubstring(s4));
+    printf("Input: %s -> Output: %d\n", s5, lengthOfLongestSubstring(s5));
+
+    return 0;
+}
