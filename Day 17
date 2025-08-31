@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+void primeFactorization(long long n) {
+    // First handle all 2's
+    while (n % 2 == 0) {
+        printf("%d ", 2);
+        n /= 2;
+    }
+
+    // Check odd factors from 3 to sqrt(n)
+    for (long long i = 3; i * i <= n; i += 2) {
+        while (n % i == 0) {
+            printf("%lld ", i);
+            n /= i;
+        }
+    }
+
+    // If n > 2, then n is prime
+    if (n > 2) {
+        printf("%lld", n);
+    }
+}
+
+int main() {
+    long long N;
+
+    printf("Enter a number: ");
+    scanf("%lld", &N);
+
+    printf("Prime Factorization: ");
+    primeFactorization(N);
+    printf("\n");
+
+    return 0;
+}
