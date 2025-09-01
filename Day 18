@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <math.h>
+
+int countDivisors(int n) {
+    int count = 0;
+    int sqrtN = (int)sqrt(n);
+
+    for (int i = 1; i <= sqrtN; i++) {
+        if (n % i == 0) {
+            // i is a divisor
+            if (i == n / i) {
+                count += 1;  // perfect square case
+            } else {
+                count += 2;  // count both i and n/i
+            }
+        }
+    }
+
+    return count;
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+
+    printf("%d\n", countDivisors(N));
+    return 0;
+}
