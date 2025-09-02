@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+// Stack structure
+#define MAX 1000
+int stack[MAX];
+int top = -1;
+
+// Push to stack
+void push(int value) {
+    if (top < MAX - 1) {
+        stack[++top] = value;
+    } else {
+        printf("Stack overflow\n");
+        exit(1);
+    }
+}
+
+// Pop from stack
+int pop() {
+    if (top >= 0) {
+        return stack[top--];
+    } else {
+        printf("Stack underflow\n");
+        exit(1);
+    }
+}
+
+// Evaluate postfix expression
+int evaluatePostfix(char *expr) {
+    char *token = strtok(expr, " ");
+
+    while (token != NULL) {
+        // If token is an operator
+        if (strcmp(token, "+") == 0 ||
+            strcmp(token, "-") == 0 ||
+            strcmp(token, "*") == 0 ||
+            strcmp(token, "/") == 0) {
+
+            int b = pop(); // second operand
+            int a = pop(); // first operand
+            int result;
+
+            if (strcmp(token, "+") == 0) result = a + b;
+            else if (strcmp(token, "-") == 0) result = a - b;
+            else if (strcmp(token, "*") == 0) result = a * b;
+            else { // division
+                if (b == 0) {
+                    printf("Division by zero error\n");
+                    exit(1);
+                }
+                result = a / b; // truncates toward zero in C
+            }
+
+            push(result);
+        } 
+        else {
+            // Operand (integer)
+            int num = atoi(token);
+            push(num);
+        }
+
+        token = strtok(NULL, " ");
+    }
+
+    return pop(); // final result
+}
+
+// Driver function
+int main() {
+    char expr[MAX];
+
+    // Read full line of postfix expression
+    printf("Enter postfix expression: ");
+    if (fgets(expr, sizeof(expr), stdin) == NULL) {
+        printf("Input error\n");
+        return 1;
+    }
+
+    // Remove newline if present
+    expr[strcspn(expr, "\n")] = '\0';
+
+    int result = evaluatePostfix(expr);
+    printf("%d\n", result);
+
+    return 0;
+}
