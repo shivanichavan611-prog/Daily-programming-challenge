@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Stack structure
+#define MAX 10000   // max stack size (10^4 as per constraints)
+
+typedef struct {
+    int arr[MAX];
+    int top;
+} Stack;
+
+// Stack functions
+void init(Stack *s) {
+    s->top = -1;
+}
+
+int isEmpty(Stack *s) {
+    return s->top == -1;
+}
+
+int isFull(Stack *s) {
+    return s->top == MAX - 1;
+}
+
+void push(Stack *s, int val) {
+    if (!isFull(s)) {
+        s->arr[++s->top] = val;
+    }
+}
+
+int pop(Stack *s) {
+    if (!isEmpty(s)) {
+        return s->arr[s->top--];
+    }
+    return -1; // underflow case
+}
+
+int peek(Stack *s) {
+    if (!isEmpty(s)) {
+        return s->arr[s->top];
+    }
+    return -1;
+}
+
+// Recursive function to insert an element in sorted order
+void sortedInsert(Stack *s, int element) {
+    if (isEmpty(s) || element < peek(s)) {
+        push(s, element);
+        return;
+    }
+
+    int temp = pop(s);
+    sortedInsert(s, element);
+    push(s, temp);
+}
+
+// Recursive function to sort the stack
+void sortStack(Stack *s) {
+    if (!isEmpty(s)) {
+        int temp = pop(s);
+        sortStack(s);
+        sortedInsert(s, temp);
+    }
+}
+
+// Utility function to print stack
+void printStack(Stack *s) {
+    for (int i = 0; i <= s->top; i++) {
+        printf("%d ", s->arr[i]);
+    }
+    printf("\n");
+}
+
+// Driver code
+int main() {
+    Stack s;
+    init(&s);
+
+    // Example Input
+    push(&s, 3);
+    push(&s, 1);
+    push(&s, 4);
+    push(&s, 2);
+
+    printf("Original Stack: ");
+    printStack(&s);
+
+    sortStack(&s);
+
+    printf("Sorted Stack:   ");
+    printStack(&s);
+
+    return 0;
+}
