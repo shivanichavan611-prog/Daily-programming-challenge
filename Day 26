@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Structure to represent an adjacency list node
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+// Structure to represent a graph
+typedef struct Graph {
+    int V;
+    Node** adjList;
+} Graph;
+
+// Create a new adjacency list node
+Node* createNode(int v) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Create a graph with V vertices
+Graph* createGraph(int V) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->V = V;
+    graph->adjList = (Node**)malloc(V * sizeof(Node*));
+
+    for (int i = 0; i < V; i++)
+        graph->adjList[i] = NULL;
+
+    return graph;
+}
+
+// Add an undirected edge
+void addEdge(Graph* graph, int src, int dest) {
+    // Add edge from src to dest
+    Node* newNode = createNode(dest);
+    newNode->next = graph->adjList[src];
+    graph->adjList[src] = newNode;
+
+    // Add edge from dest to src (undirected graph)
+    newNode = createNode(src);
+    newNode->next = graph->adjList[dest];
+    graph->adjList[dest] = newNode;
+}
+
+// DFS helper function to detect cycle
+bool isCyclicUtil(Graph* graph, int v, bool visited[], int parent) {
+    visited[v] = true;
+
+    Node* temp = graph->adjList[v];
+    while (temp) {
+        int adjVertex = temp->vertex;
+
+        // If not visited, recur for the adjacent vertex
+        if (!visited[adjVertex]) {
+            if (isCyclicUtil(graph, adjVertex, visited, v))
+                return true;
+        }
+        // If adjacent is visited and not parent, cycle found
+        else if (adjVertex != parent) {
+            return true;
+        }
+
+        temp = temp->next;
+    }
+
+    return false;
+}
+
+// Function to detect cycle in an undirected graph
+bool isCyclic(Graph* graph) {
+    bool* visited = (bool*)malloc(graph->V * sizeof(bool));
+    for (int i = 0; i < graph->V; i++)
+        visited[i] = false;
+
+    // Check for cycle in all connected components
+    for (int u = 0; u < graph->V; u++) {
+        if (!visited[u]) {
+            if (isCyclicUtil(graph, u, visited, -1))
+                return true;
+        }
+    }
+
+    return false;
+}
+
+// Main function with test cases
+int main() {
+    // Example 1: Cycle exists
+    int V1 = 5;
+    int edges1[][2] = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}};
+    Graph* graph1 = createGraph(V1);
+
+    for (int i = 0; i < 5; i++)
+        addEdge(graph1, edges1[i][0], edges1[i][1]);
+
+    printf("Example 1 Output: %s\n", isCyclic(graph1) ? "true" : "false");
+
+    // Example 2: No cycle
+    int V2 = 3;
+    int edges2[][2] = {{0, 1}, {1, 2}};
+    Graph* graph2 = createGraph(V2);
+
+    for (int i = 0; i < 2; i++)
+        addEdge(graph2, edges2[i][0], edges2[i][1]);
+
+    printf("Example 2 Output: %s\n", isCyclic(graph2) ? "true" : "false");
+
+    // Example 3: Cycle exists
+    int V3 = 4;
+    int edges3[][2] = {{0, 1}, {1, 2}, {2, 0}};
+    Graph* graph3 = createGraph(V3);
+
+    for (int i = 0; i < 3; i++)
+        addEdge(graph3, edges3[i][0], edges3[i][1]);
+
+    printf("Example 3 Output: %s\n", isCyclic(graph3) ? "true" : "false");
+
+    return 0;
+}
