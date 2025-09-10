@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_VERTICES 10000
+
+// Queue structure for BFS
+typedef struct {
+    int items[MAX_VERTICES];
+    int front, rear;
+} Queue;
+
+void enqueue(Queue* q, int value) {
+    q->items[++q->rear] = value;
+}
+
+int dequeue(Queue* q) {
+    return q->items[q->front++];
+}
+
+int isEmpty(Queue* q) {
+    return q->front > q->rear;
+}
+
+// Adjacency list representation
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+
+// Create a new adjacency list node
+Node* createNode(int vertex) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = vertex;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Find the shortest path using BFS
+int shortestPath(int V, Node* adjList[], int start, int end) {
+    int visited[V];
+    int distance[V];
+
+    for (int i = 0; i < V; i++) {
+        visited[i] = 0;
+        distance[i] = -1;
+    }
+
+    Queue q;
+    q.front = 0;
+    q.rear = -1;
+
+    enqueue(&q, start);
+    visited[start] = 1;
+    distance[start] = 0;
+
+    while (!isEmpty(&q)) {
+        int current = dequeue(&q);
+
+        // If we reach the destination
+        if (current == end) {
+            return distance[current];
+        }
+
+        Node* temp = adjList[current];
+        while (temp) {
+            int neighbor = temp->vertex;
+            if (!visited[neighbor]) {
+                visited[neighbor] = 1;
+                distance[neighbor] = distance[current] + 1;
+                enqueue(&q, neighbor);
+            }
+            temp = temp->next;
+        }
+    }
+
+    // No path found
+    return -1;
+}
+
+int main() {
+    int V, E;
+    printf("Enter number of vertices and edges:\n");
+    scanf("%d %d", &V, &E);
+
+    // Initialize adjacency list
+    Node* adjList[V];
+    for (int i = 0; i < V; i++)
+        adjList[i] = NULL;
+
+    printf("Enter the edges (u v):\n");
+    for (int i = 0; i < E; i++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+
+        // Since the graph is undirected, add edges both ways
+        Node* nodeV = createNode(v);
+        nodeV->next = adjList[u];
+        adjList[u] = nodeV;
+
+        Node* nodeU = createNode(u);
+        nodeU->next = adjList[v];
+        adjList[v] = nodeU;
+    }
+
+    int start, end;
+    printf("Enter start and end nodes:\n");
+    scanf("%d %d", &start, &end);
+
+    int result = (start == end) ? 0 : shortestPath(V, adjList, start, end);
+    printf("Shortest Path Length: %d\n", result);
+
+    return 0;
+}
