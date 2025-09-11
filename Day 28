@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+// Definition for a binary tree node
+struct TreeNode {
+    int val;
+    struct TreeNode* left;
+    struct TreeNode* right;
+};
+
+// Helper function to check if two subtrees are mirrors of each other
+bool isMirror(struct TreeNode* left, struct TreeNode* right) {
+    // Both subtrees are NULL, they are symmetric
+    if (left == NULL && right == NULL)
+        return true;
+    
+    // One of them is NULL, the other is not -> not symmetric
+    if (left == NULL || right == NULL)
+        return false;
+    
+    // Values must be equal and the children must also be mirrors
+    return (left->val == right->val) &&
+           isMirror(left->left, right->right) &&
+           isMirror(left->right, right->left);
+}
+
+// Main function to check if tree is symmetric
+bool isSymmetric(struct TreeNode* root) {
+    if (root == NULL)
+        return true;  // An empty tree is symmetric by definition
+    
+    return isMirror(root->left, root->right);
+}
+
+// Utility function to create a new tree node
+struct TreeNode* createNode(int val) {
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = val;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+// Example usage with test cases
+int main() {
+    // Example 1: Symmetric Tree [1, 2, 2, 3, 4, 4, 3]
+    struct TreeNode* root1 = createNode(1);
+    root1->left = createNode(2);
+    root1->right = createNode(2);
+    root1->left->left = createNode(3);
+    root1->left->right = createNode(4);
+    root1->right->left = createNode(4);
+    root1->right->right = createNode(3);
+    
+    printf("%s\n", isSymmetric(root1) ? "true" : "false");  // Output: true
+
+    // Example 2: Asymmetric Tree [1, 2, 2, NULL, 3, NULL, 3]
+    struct TreeNode* root2 = createNode(1);
+    root2->left = createNode(2);
+    root2->right = createNode(2);
+    root2->left->right = createNode(3);
+    root2->right->right = createNode(3);
+
+    printf("%s\n", isSymmetric(root2) ? "true" : "false");  // Output: false
+
+    // Example 3: Single node tree [1]
+    struct TreeNode* root3 = createNode(1);
+    printf("%s\n", isSymmetric(root3) ? "true" : "false");  // Output: true
+
+    // Example 4: Empty tree []
+    struct TreeNode* root4 = NULL;
+    printf("%s\n", isSymmetric(root4) ? "true" : "false");  // Output: true
+
+    return 0;
+}
