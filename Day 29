@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <math.h>
+
+// Function to compute Fibonacci approximately using Binet's formula
+double fibonacci_approx(int n) {
+    const double phi = (1 + sqrt(5)) / 2;
+    return pow(phi, n) / sqrt(5);
+}
+
+// Function to compute Fibonacci exactly using DP for n <= 93
+unsigned long long fibonacci_exact(int n) {
+    if (n == 0) return 0;
+    if (n == 1) return 1;
+
+    unsigned long long a = 0, b = 1;
+    for (int i = 2; i <= n; i++) {
+        unsigned long long temp = a + b;
+        a = b;
+        b = temp;
+    }
+    return b;
+}
+
+int main() {
+    int n;
+    printf("Enter n (0 ≤ n ≤ 1000): ");
+    scanf("%d", &n);
+
+    if (n < 0 || n > 1000) {
+        printf("Error: n out of range.\n");
+        return 1;
+    }
+
+    if (n <= 93) {
+        unsigned long long result = fibonacci_exact(n);
+        printf("F(%d) = %llu\n", n, result);
+    } else {
+        double approx = fibonacci_approx(n);
+        printf("F(%d) ≈ %.15e\n", n, approx);
+    }
+
+    return 0;
+}
