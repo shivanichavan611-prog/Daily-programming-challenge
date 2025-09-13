@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <limits.h>
+
+int minCoins(int coins[], int n, int amount) {
+    // Initialize DP array with amount+1 (as a big value, INT_MAX)
+    int dp[amount + 1];
+
+    // Base case: 0 coins needed to make amount 0
+    dp[0] = 0;
+
+    // Initialize all other amounts to a large value (amount+1)
+    for (int i = 1; i <= amount; i++) {
+        dp[i] = amount + 1;
+    }
+
+    // Build the DP table
+    for (int i = 1; i <= amount; i++) {
+        for (int j = 0; j < n; j++) {
+            if (coins[j] <= i) {
+                if (dp[i - coins[j]] != amount + 1) {
+                    if (dp[i] > dp[i - coins[j]] + 1) {
+                        dp[i] = dp[i - coins[j]] + 1;
+                    }
+                }
+            }
+        }
+    }
+
+    // If no combination found, return -1
+    return (dp[amount] > amount) ? -1 : dp[amount];
+}
+
+int main() {
+    // Example Test Cases
+    int coins1[] = {1, 2, 5};
+    int amount1 = 11;
+    int n1 = sizeof(coins1) / sizeof(coins1[0]);
+    printf("Minimum coins needed (Test Case 1): %d\n", minCoins(coins1, n1, amount1));
+
+    int coins2[] = {2};
+    int amount2 = 3;
+    int n2 = sizeof(coins2) / sizeof(coins2[0]);
+    printf("Minimum coins needed (Test Case 2): %d\n", minCoins(coins2, n2, amount2));
+
+    int coins3[] = {1};
+    int amount3 = 0;
+    int n3 = sizeof(coins3) / sizeof(coins3[0]);
+    printf("Minimum coins needed (Test Case 3): %d\n", minCoins(coins3, n3, amount3));
+
+    return 0;
+}
